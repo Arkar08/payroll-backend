@@ -31,6 +31,7 @@ const employeeSchema = new mongoose.Schema({
     },
     phone:{
         type:Number,
+        required:true
     },
     role:{
         type:String,
