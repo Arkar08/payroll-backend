@@ -1,6 +1,6 @@
 export const postUserController = async(req,res)=>{
     try {
-        console.log('user post')
+        return res.status(200).json("hello")
     } catch (error) {
         return res.status(500).json({message:error})
     }
