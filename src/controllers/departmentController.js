@@ -1,13 +1,14 @@
 import Department from "../models/departmentSchema.js";
 
 
+
 export const postDeptController = async(req,res)=>{
     const {name,salaryRate} = req.body;
     if(!name || !salaryRate){
         const data = {
             status:404,
             isSuccess:false,
-            message:"Data Not Found."
+            message:"Plz Filled out in the form field."
         }
         return res.status(data.status).json(data)
     }

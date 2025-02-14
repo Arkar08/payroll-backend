@@ -13,7 +13,6 @@ const attanceSchema = new mongoose.Schema({
     },
     totalTime:{
         type:String,
-        required:true
     },
     employeeId:{
         type:mongoose.Schema.Types.ObjectId,

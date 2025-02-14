@@ -1,13 +1,14 @@
 import Department from "../models/departmentSchema.js";
 import Users from "../models/employeeSchema.js";
 
+
 export const postUserController = async(req,res)=>{
     const {fullName,departmentId,email,password,age,genre,phone,role,salary,address} = req.body;
     if(!fullName || !departmentId || !email || !password || !age || !genre || !phone || !role || !salary || !address){
         const data = {
             status:404,
             isSuccess:false,
-            message:"Data Not Found."
+            message:"Plz Filled out in the form field."
         }
         return res.status(data.status).json(data) 
     }

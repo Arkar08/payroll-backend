@@ -1,59 +1,42 @@
-import Leave from  '../models/leaveSchema.js'
-import Users from "../models/employeeSchema.js";
+import Attance from '../models/attanceSchema.js'
+import Users from '../models/employeeSchema.js';
 
 
-export const postLeaveController = async(req,res)=>{
-    const {employeeId,fromDate,toDate,releaseType,releaseDays} = req.body;
-    if(!employeeId || !fromDate || !toDate || !releaseType){
+export const postAttanceController = async(req,res)=>{
+    const {employeeId,checkIn} = req.body;
+    if(!employeeId){
         const data = {
             status:404,
             isSuccess:false,
             message:"Plz Filled out in the form field."
         }
-        return res.status(data.status).json(data)  
+        return res.status(data.status).json(data)
     }
     try {
-            const findUser = await Users.findById({_id:employeeId})
-            if(!findUser){
-                const data = {
-                    status:404,
-                    isSuccess:false,
-                    message:"User does not exist."
-                }
-                return res.status(data.status).json(data)  
+        const findUser = await Users.findById({_id:employeeId})
+        if(!findUser){
+            const data = {
+                status:404,
+                isSuccess:false,
+                message:"User does not exist."
             }
-
-            const find = await Leave.find({$and:[{employeeId:employeeId},{fromDate:fromDate},{toDate:toDate}]})
-            if(find.length > 0){
-                const data = {
-                    status:404,
-                    isSuccess:false,
-                    message:"data is already exist."
-                }
-                return res.status(data.status).json(data) 
+            return res.status(data.status).json(data)  
+        }
+        const checkIn =`${new Date().getHours()}:${new Date().getMinutes()}` 
+        const postData = await Attance.create({
+            employeeId:employeeId,
+            checkIn:checkIn,
+        })
+        if(postData){
+            const data = {
+                status:201,
+                isSuccess:true,
+                maiinData:postData
             }
-            if(find.length <= 0){
-                const postLeave = await Leave.create({
-                    employeeId:employeeId,
-                    fromDate:fromDate,
-                    toDate:toDate,
-                    releaseType:releaseType,
-                    releaseDays:releaseDays
-                })
-                if(postLeave){
-                    const data = {
-                        status:201,
-                        isSuccess:true,
-                        maiinData:postLeave
-                    }
-                    return res.status(data.status).json(data) 
-                }
-            }
-
-            
-
+            return res.status(data.status).json(data) 
+        }
     } catch (error) {
-        console.log(error,'post leave')
+        console.log(error,'post Attance')
         const data = {
             isSuccess:false,
             status:500,
@@ -63,10 +46,10 @@ export const postLeaveController = async(req,res)=>{
     }
 }
 
-export const getLeaveController = async(req,res)=>{
+export const getAttanceController = async(req,res)=>{
     try {
-        const findLeave = await Leave.find({})
-        if(findLeave.length < 0){
+        const findAttance = await Attance.find({})
+        if(findAttance.length < 0){
             const data = {
                 status:404,
                 isSuccess:false,
@@ -74,17 +57,17 @@ export const getLeaveController = async(req,res)=>{
             }
             return res.status(data.status).json(data) 
         }
-        if(findLeave.length > 0){
+        if(findAttance.length > 0){
             const data = {
                 status:200,
                 isSuccess:true,
-                length:findLeave.length,
-                mainData:findLeave
+                length:findAttance.length,
+                mainData:findAttance
             }
             return res.status(data.status).json(data)
         }
     } catch (error) {
-        console.log(error,'get leave')
+        console.log(error,'get attance')
         const data = {
             isSuccess:false,
             status:500,
@@ -94,7 +77,7 @@ export const getLeaveController = async(req,res)=>{
     }
 }
 
-export const getLeaveIdController = async(req,res)=>{
+export const getAttanceIdController = async(req,res) =>{
     const {id} = req.params;
     if(!parseInt(id)){
         const data = {
@@ -105,8 +88,8 @@ export const getLeaveIdController = async(req,res)=>{
         return res.status(data.status).json(data)
     }
     try {
-        const findLeave = await Leave.findById({_id:id})
-        if(!findLeave){
+        const findAttance = await Attance.findById({_id:id})
+        if(!findAttance){
             const data = {
                 status:404,
                 isSuccess:false,
@@ -114,16 +97,16 @@ export const getLeaveIdController = async(req,res)=>{
             }
             return res.status(data.status).json(data)
         }
-        if(findLeave){
+        if(findAttance){
             const data = {
                 status:200,
                 isSuccess:true,
-                mainData:findLeave
+                mainData:findAttance
             }
-            return res.status(data.status).json(data)
+            return res.status(data.status).json(data) 
         }
     } catch (error) {
-        console.log(error,'get leave Id')
+        console.log(error,'get attance id')
         const data = {
             isSuccess:false,
             status:500,
@@ -133,7 +116,7 @@ export const getLeaveIdController = async(req,res)=>{
     }
 }
 
-export const patchLeaveIdController = async(req,res)=>{
+export const patchAttanceController = async(req,res)=>{
     const {id} = req.params;
     if(!parseInt(id)){
         const data = {
@@ -144,8 +127,8 @@ export const patchLeaveIdController = async(req,res)=>{
         return res.status(data.status).json(data)
     }
     try {
-        const findLeave = await Leave.findById({_id:id})
-        if(!findLeave){
+        const findAttance = await Attance.findById({_id:id})
+        if(!findAttance){
             const data = {
                 status:404,
                 isSuccess:false,
@@ -153,20 +136,35 @@ export const patchLeaveIdController = async(req,res)=>{
             }
             return res.status(data.status).json(data)
         }
-        if(findLeave){
-            const updateData = await Leave.findByIdAndUpdate({_id:id},{...req.body})
-            if(updateData){
-                const patchData = await Leave.findById({_id:id})
+        if(findAttance){
+            const getMinutes = new Date().getMinutes() < 10 ? '0'+ new Date().getMinutes() : new Date().getMinutes()
+            const getHours = new Date().getHours() < 10 ? '0'+ new Date().getHours(): new Date().getHours()
+            const checkOut = `${getHours}:${getMinutes}`
+            const totalTime = new Date() - findAttance.createdAt
+            const hours = Math.floor(totalTime /(1000 *3600) )
+            const remainingSeconds = totalTime %(1000 * 3600);
+            const minutes = Math.floor(remainingSeconds / (1000 *60));
+            const data =hours< 10 ? '0' + hours : hours
+            const minutesData = minutes< 10 ? '0'+ minutes:minutes
+            const total = `${data}:${minutesData}`
+            const updateData = await Attance.findOneAndUpdate({_id:id},{checkOut:checkOut})
+            const updateTime = await Attance.findOneAndUpdate({_id:id},{totalTime:total})
+            if(updateData && updateTime){
+                const findAttanceId = await Attance.findById({_id:id})
+                const postData = findAttanceId.toObject()
+                delete postData.createdAt;
+                delete postData.__v;
+                delete postData.updatedAt
                 const data = {
                     status:200,
                     isSuccess:true,
-                    mainData:patchData
+                    mainData:postData
                 }
-                return res.status(data.status).json(data)
+                return res.status(data.status).json(data) 
             }
         }
     } catch (error) {
-        console.log(error,'patch leave Id')
+        console.log(error,'patch attance id')
         const data = {
             isSuccess:false,
             status:500,
@@ -176,7 +174,7 @@ export const patchLeaveIdController = async(req,res)=>{
     }
 }
 
-export const deleteLeaveController = async(req,res)=>{
+export const deleteAttanceController = async(req,res)=>{
     const {id} = req.params;
     if(!parseInt(id)){
         const data = {
@@ -187,8 +185,8 @@ export const deleteLeaveController = async(req,res)=>{
         return res.status(data.status).json(data)
     }
     try {
-        const findLeave = await Leave.findById({_id:id})
-        if(!findLeave){
+        const findAttance = await Attance.findById({_id:id})
+        if(!findAttance){
             const data = {
                 status:404,
                 isSuccess:false,
@@ -196,8 +194,8 @@ export const deleteLeaveController = async(req,res)=>{
             }
             return res.status(data.status).json(data)
         }
-        if(findLeave){
-            const deleteUser = await Leave.findByIdAndDelete({_id:id})
+        if(findAttance){
+            const deleteUser = await Attance.findByIdAndDelete({_id:id})
            if(deleteUser){
             const data = {
                 status:200,
@@ -208,7 +206,7 @@ export const deleteLeaveController = async(req,res)=>{
            }
         } 
     } catch (error) {
-        console.log(error,'delete leave id')
+        console.log(error,'delete attance id')
         const data = {
             status:500,
             isSuccess:false,

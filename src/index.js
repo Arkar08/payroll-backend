@@ -5,6 +5,7 @@ import userRoute from './routes/employeeRoute.js';
 import authRoute from './routes/authRoute.js';
 import deptRoute from './routes/departmentRoute.js';
 import leaveRoute from './routes/leaveRoute.js';
+import attanceRoute from './routes/attanceRoute.js';
 
 
 
@@ -28,6 +29,7 @@ app.use("/api/v1/users",userRoute)
 app.use("/api/v1/auth",authRoute)
 app.use("/api/v1/department",deptRoute)
 app.use("/api/v1/leave",leaveRoute)
+app.use("/api/v1/attance",attanceRoute)
 
 app.listen(PORT,async()=>{
     await connectToDb()
