@@ -16,11 +16,12 @@ const leaveSchema = new mongoose.Schema({
     },
     releaseDays:{
         type:Number,
-        required:true
+        default:0,
     },
     status:{
         type:String,
-        enums:['Pending','Approve','Reject']
+        enums:['Pending','Approve','Reject'],
+        default:"Pending"
     },
     employeeId:{
         type:mongoose.Schema.Types.ObjectId,

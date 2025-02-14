@@ -144,12 +144,13 @@ export const patchDeptController = async(req,res)=>{
             return res.status(data.status).json(data)
         }
         if(findDept){
-            const updateData = await Department.findByIdAndUpdate({_id:id})
+            const updateData = await Department.findByIdAndUpdate({_id:id},{...req.body})
             if(updateData){
+                const patchData = await Department.findById({_id:id})
                 const data = {
                     status:200,
                     isSuccess:true,
-                    mainData:updateData
+                    mainData:patchData
                 }
                 return res.status(data.status).json(data)
             }

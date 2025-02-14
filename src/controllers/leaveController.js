@@ -1,78 +1,59 @@
-import Department from "../models/departmentSchema.js";
+import Leave from  '../models/leaveSchema.js'
 import Users from "../models/employeeSchema.js";
 
-export const postUserController = async(req,res)=>{
-    const {fullName,departmentId,email,password,age,genre,phone,role,salary,address} = req.body;
-    if(!fullName || !departmentId || !email || !password || !age || !genre || !phone || !role || !salary || !address){
+
+export const postLeaveController = async(req,res)=>{
+    const {employeeId,fromDate,toDate,releaseType,releaseDays} = req.body;
+    if(!employeeId || !fromDate || !toDate || !releaseType){
         const data = {
             status:404,
             isSuccess:false,
             message:"Data Not Found."
         }
-        return res.status(data.status).json(data) 
+        return res.status(data.status).json(data)  
     }
     try {
-        const findName = await Users.findOne({fullName:fullName})
-        if(findName){
-            const data = {
-                status:404,
-                isSuccess:false,
-                message:"Name is already exist."
-            }
-            return res.status(data.status).json(data) 
-        }
-        const findEmail = await Users.findOne({email:email})
-        if(findEmail){
-            const data = {
-                status:404,
-                isSuccess:false,
-                message:"Email is already exist."
-            }
-            return res.status(data.status).json(data) 
-        }
-
-        if(password.length < 6){
-            const data = {
-                status:404,
-                isSuccess:false,
-                message:'password is minLength 6'
-            }
-            return res.status(data.status).json(data) 
-        }
-
-        const findDepartment = await Department.findById({_id:departmentId})
-        if(findDepartment){
-            const newUser = await Users.create({
-                fullName:fullName,
-                departmentId:departmentId,
-                email:email,
-                password:password,
-                age:age,
-                genre:genre,
-                phone:phone,
-                role:role,
-                salary:salary,
-                address:address
-            })
-            if(newUser){
+            const findUser = await Users.findById({_id:employeeId})
+            if(!findUser){
                 const data = {
-                    status:201,
-                    isSuccess:true,
-                    maiinData:newUser
+                    status:404,
+                    isSuccess:false,
+                    message:"User does not exist."
+                }
+                return res.status(data.status).json(data)  
+            }
+
+            const find = await Leave.find({$and:[{employeeId:employeeId},{fromDate:fromDate},{toDate:toDate}]})
+            if(find.length > 0){
+                const data = {
+                    status:404,
+                    isSuccess:false,
+                    message:"data is already exist."
                 }
                 return res.status(data.status).json(data) 
             }
-        }
-        if(!findDepartment){
-            const data = {
-                status:404,
-                isSuccess:false,
-                message:"department does not exist."
+            if(find.length <= 0){
+                const postLeave = await Leave.create({
+                    employeeId:employeeId,
+                    fromDate:fromDate,
+                    toDate:toDate,
+                    releaseType:releaseType,
+                    releaseDays:releaseDays
+                })
+                if(postLeave){
+                    const data = {
+                        status:201,
+                        isSuccess:true,
+                        maiinData:postLeave
+                    }
+                    return res.status(data.status).json(data) 
+                }
             }
-            return res.status(data.status).json(data) 
-        }
+
+            
+
     } catch (error) {
-        console.log(error,'post user')
+        console.log(error,'post leave')
         const data = {
             isSuccess:false,
             status:500,
@@ -82,10 +63,10 @@ export const postUserController = async(req,res)=>{
     }
 }
 
-export const getUserController = async(req,res) =>{
+export const getLeaveController = async(req,res)=>{
     try {
-        const findUser = await Users.find({})
-        if(findUser.length <= 0){
+        const findLeave = await Leave.find({})
+        if(findLeave.length < 0){
             const data = {
                 status:404,
                 isSuccess:false,
@@ -93,17 +74,17 @@ export const getUserController = async(req,res) =>{
             }
             return res.status(data.status).json(data) 
         }
-        if(findUser.length > 0){
+        if(findLeave.length > 0){
             const data = {
                 status:200,
                 isSuccess:true,
-                length:findUser.length,
-                mainData:findUser
+                length:findLeave.length,
+                mainData:findLeave
             }
             return res.status(data.status).json(data)
         }
     } catch (error) {
-        console.log(error,'get user')
+        console.log(error,'get leave')
         const data = {
             isSuccess:false,
             status:500,
@@ -113,19 +94,19 @@ export const getUserController = async(req,res) =>{
     }
 }
 
-export const getUserIdController = async(req,res)=>{
+export const getLeaveIdController = async(req,res)=>{
     const {id} = req.params;
     if(!parseInt(id)){
         const data = {
             status:404,
             isSuccess:false,
-            message:"userId does not exist."
+            message:"leaveId does not exist."
         }
         return res.status(data.status).json(data)
     }
     try {
-        const findUser = await Users.findById({_id:id})
-        if(!findUser){
+        const findLeave = await Leave.findById({_id:id})
+        if(!findLeave){
             const data = {
                 status:404,
                 isSuccess:false,
@@ -133,38 +114,38 @@ export const getUserIdController = async(req,res)=>{
             }
             return res.status(data.status).json(data)
         }
-        if(findUser){
+        if(findLeave){
             const data = {
                 status:200,
                 isSuccess:true,
-                mainData:findUser
+                mainData:findLeave
             }
             return res.status(data.status).json(data)
         }
     } catch (error) {
-        console.log(error,'get user id')
+        console.log(error,'get leave Id')
         const data = {
-            status:500,
             isSuccess:false,
-            message:'Something went Wrong' || error
+            status:500,
+            message:'Something went Wrong'|| error
         }
         return res.status(data.status).json(data)
     }
 }
 
-export const patchUserController = async(req,res)=>{
+export const patchLeaveIdController = async(req,res)=>{
     const {id} = req.params;
     if(!parseInt(id)){
         const data = {
             status:404,
             isSuccess:false,
-            message:"userId does not exist."
+            message:"leaveId does not exist."
         }
         return res.status(data.status).json(data)
     }
     try {
-        const findUser = await Users.findById({_id:id})
-        if(!findUser){
+        const findLeave = await Leave.findById({_id:id})
+        if(!findLeave){
             const data = {
                 status:404,
                 isSuccess:false,
@@ -172,10 +153,10 @@ export const patchUserController = async(req,res)=>{
             }
             return res.status(data.status).json(data)
         }
-        if(findUser){
-            const updateData = await Users.findByIdAndUpdate({_id:id},{...req.body})
-            const patchData = await Users.findById({_id:id})
+        if(findLeave){
+            const updateData = await Leave.findByIdAndUpdate({_id:id},{...req.body})
             if(updateData){
+                const patchData = await Leave.findById({_id:id})
                 const data = {
                     status:200,
                     isSuccess:true,
@@ -185,29 +166,29 @@ export const patchUserController = async(req,res)=>{
             }
         }
     } catch (error) {
-        console.log(error,'patch user id')
+        console.log(error,'patch leave Id')
         const data = {
-            status:500,
             isSuccess:false,
-            message:'Something went Wrong' || error
+            status:500,
+            message:'Something went Wrong'|| error
         }
         return res.status(data.status).json(data)
     }
 }
 
-export const deleteUserController = async(req,res)=>{
+export const deleteLeaveController = async(req,res)=>{
     const {id} = req.params;
     if(!parseInt(id)){
         const data = {
             status:404,
             isSuccess:false,
-            message:"userId does not exist."
+            message:"leaveId does not exist."
         }
         return res.status(data.status).json(data)
     }
     try {
-        const findUser = await Users.findById({_id:id})
-        if(!findUser){
+        const findLeave = await Leave.findById({_id:id})
+        if(!findLeave){
             const data = {
                 status:404,
                 isSuccess:false,
@@ -215,8 +196,8 @@ export const deleteUserController = async(req,res)=>{
             }
             return res.status(data.status).json(data)
         }
-        if(findUser){
-            const deleteUser = await Users.findByIdAndDelete({_id:id})
+        if(findLeave){
+            const deleteUser = await Leave.findByIdAndDelete({_id:id})
            if(deleteUser){
             const data = {
                 status:200,
@@ -227,7 +208,7 @@ export const deleteUserController = async(req,res)=>{
            }
         } 
     } catch (error) {
-        console.log(error,'delete user id')
+        console.log(error,'delete leave id')
         const data = {
             status:500,
             isSuccess:false,
