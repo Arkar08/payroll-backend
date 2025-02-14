@@ -66,7 +66,7 @@ export const postLeaveController = async(req,res)=>{
 export const getLeaveController = async(req,res)=>{
     try {
         const findLeave = await Leave.find({})
-        if(findLeave.length < 0){
+        if(findLeave.length <= 0){
             const data = {
                 status:404,
                 isSuccess:false,

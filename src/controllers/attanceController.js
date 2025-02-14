@@ -26,6 +26,7 @@ export const postAttanceController = async(req,res)=>{
         const postData = await Attance.create({
             employeeId:employeeId,
             checkIn:checkIn,
+            date:new Date()
         })
         if(postData){
             const data = {
@@ -49,7 +50,7 @@ export const postAttanceController = async(req,res)=>{
 export const getAttanceController = async(req,res)=>{
     try {
         const findAttance = await Attance.find({})
-        if(findAttance.length < 0){
+        if(findAttance.length <= 0){
             const data = {
                 status:404,
                 isSuccess:false,
