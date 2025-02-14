@@ -52,11 +52,10 @@ export const postDeptController = async(req,res)=>{
     }
 }
 
-
 export const getDeptController = async(req,res)=>{
     try {
         const getDept = await Department.find({})
-        if(getDept.length < 0){
+        if(getDept.length <= 0){
             const data = {
                 status:404,
                 isSuccess:false,
@@ -84,7 +83,6 @@ export const getDeptController = async(req,res)=>{
         return res.status(data.status).json(data)
     }
 }
-
 
 export const getDeptIdController = async(req,res)=>{
     const {id} = req.params;
@@ -167,7 +165,6 @@ export const patchDeptController = async(req,res)=>{
     }
 }
 
-
 export const deleteDeptController = async(req,res)=>{
     const {id} = req.params;
     if(!parseInt(id)){
@@ -200,7 +197,7 @@ export const deleteDeptController = async(req,res)=>{
            }
         } 
     } catch (error) {
-        console.log(error,'get Dept id')
+        console.log(error,'delete Dept id')
         const data = {
             status:500,
             isSuccess:false,

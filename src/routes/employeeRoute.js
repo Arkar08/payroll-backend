@@ -1,9 +1,13 @@
 import express from 'express'
-import { postUserController } from '../controllers/userController.js';
+import { deleteUserController, getUserController, getUserIdController, patchUserController, postUserController } from '../controllers/userController.js';
 
 const router = express.Router()
 
 router.post("/",postUserController)
+router.get("/",getUserController)
+router.get("/:id",getUserIdController)
+router.patch("/:id",patchUserController)
+router.delete("/:id",deleteUserController)
 
 
 export default router;
