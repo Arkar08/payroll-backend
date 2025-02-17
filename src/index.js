@@ -9,6 +9,7 @@ import attanceRoute from './routes/attanceRoute.js';
 import loanRoute  from './routes/loanRoute.js';
 import generateRoute from './routes/generateRoute.js';
 import payrollRoute from './routes/payrollRoute.js';
+import dropdownRoute from './routes/dropDownRoute.js';
 
 
 
@@ -36,6 +37,7 @@ app.use("/api/v1/attance",attanceRoute)
 app.use("/api/v1/loan",loanRoute)
 app.use("/api/v1/generate",generateRoute)
 app.use("/api/v1/payroll",payrollRoute)
+app.use("/api/v1/dropdown",dropdownRoute)
 
 app.listen(PORT,async()=>{
     await connectToDb()
