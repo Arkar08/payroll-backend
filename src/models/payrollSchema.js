@@ -6,15 +6,11 @@ const payrollSchema = new mongoose.Schema({
         refs:"Users",
         required:true
     },
-    leaveId:{
+    leave:{
         type:Number,
         default:0
     },
-    loanId:{
-        type:Number,
-        default:0
-    },
-    attanceId:{
+    attance:{
         type:Number,
         required:true,
         default:0

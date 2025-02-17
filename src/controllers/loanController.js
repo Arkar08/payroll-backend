@@ -1,10 +1,9 @@
-import Attance from '../models/attanceSchema.js'
-import Users from '../models/employeeSchema.js';
+import Users from "../models/employeeSchema.js";
+import Loan from "../models/loanSchema.js";
 
-
-export const postAttanceController = async(req,res)=>{
-    const {employeeId} = req.body;
-    if(!employeeId){
+export const postLoanController = async(req,res)=>{
+    const {employeeId,loanType,amount,description} = req.body;
+    if(!employeeId || !loanType || !amount || !description){
         const data = {
             status:404,
             isSuccess:false,
@@ -22,22 +21,31 @@ export const postAttanceController = async(req,res)=>{
             }
             return res.status(data.status).json(data)  
         }
-        const checkIn =`${new Date().getHours()}:${new Date().getMinutes()}` 
-        const postData = await Attance.create({
+        const findLoan = await Loan.findOne({employeeId:employeeId})
+        if(findLoan){
+            const data = {
+                status:400,
+                isSuccess:false,
+                message:"Loan is already exist."
+            }
+            return res.status(data.status).json(data)  
+        }
+        const newLoan =  await Loan.create({
             employeeId:employeeId,
-            checkIn:checkIn,
-            date:new Date()
+            loanType:loanType,
+            description:description,
+            amount:amount
         })
-        if(postData){
+        if(newLoan){
             const data = {
                 status:201,
                 isSuccess:true,
-                maiinData:postData
+                maiinData:newLoan
             }
             return res.status(data.status).json(data) 
         }
     } catch (error) {
-        console.log(error,'post Attance')
+        console.log(error,'post loan')
         const data = {
             isSuccess:false,
             status:500,
@@ -47,28 +55,67 @@ export const postAttanceController = async(req,res)=>{
     }
 }
 
-export const getAttanceController = async(req,res)=>{
+export const getLoanController = async(req,res)=>{
     try {
-        const findAttance = await Attance.find({})
-        if(findAttance.length <= 0){
+        const findLoan = await Loan.find({})
+        if(findLoan.length > 0){
+            const data = {
+                status:201,
+                isSuccess:true,
+                length:findLoan.length,
+                maiinData:findLoan
+            }
+            return res.status(data.status).json(data) 
+        }
+        if(findLoan.length <= 0){
+            const data = {
+                status:404,
+                isSuccess:false,
+                message:"Data not found."
+            }
+            return res.status(data.status).json(data)  
+        }
+    } catch (error) {
+        console.log(error,'get loan')
+        const data = {
+            isSuccess:false,
+            status:500,
+            message:'Something went Wrong'|| error
+        }
+        return res.status(data.status).json(data)
+    }
+}
+
+export const getLoanIdController = async(req,res) =>{
+    const {id} = req.params;
+    if(!parseInt(id)){
+        const data = {
+            status:404,
+            isSuccess:false,
+            message:"loanId does not exist."
+        }
+        return res.status(data.status).json(data)
+    }
+    try {
+        const findLoan = await Loan.findById({_id:id})
+        if(!findLoan){
             const data = {
                 status:404,
                 isSuccess:false,
                 message:"Data Not Found."
             }
-            return res.status(data.status).json(data) 
+            return res.status(data.status).json(data)
         }
-        if(findAttance.length > 0){
+        if(findLoan){
             const data = {
                 status:200,
                 isSuccess:true,
-                length:findAttance.length,
-                mainData:findAttance
+                mainData:findLoan
             }
-            return res.status(data.status).json(data)
+            return res.status(data.status).json(data) 
         }
     } catch (error) {
-        console.log(error,'get attance')
+        console.log(error,'get loan id')
         const data = {
             isSuccess:false,
             status:500,
@@ -78,7 +125,8 @@ export const getAttanceController = async(req,res)=>{
     }
 }
 
-export const getAttanceIdController = async(req,res) =>{
+export const patchLoanController = async(req,res)=>{
+    const {status} = req.body;
     const {id} = req.params;
     if(!parseInt(id)){
         const data = {
@@ -89,8 +137,8 @@ export const getAttanceIdController = async(req,res) =>{
         return res.status(data.status).json(data)
     }
     try {
-        const findAttance = await Attance.findById({_id:id})
-        if(!findAttance){
+        const findLoan = await Loan.findById({_id:id})
+        if(!findLoan){
             const data = {
                 status:404,
                 isSuccess:false,
@@ -98,74 +146,22 @@ export const getAttanceIdController = async(req,res) =>{
             }
             return res.status(data.status).json(data)
         }
-        if(findAttance){
-            const data = {
-                status:200,
-                isSuccess:true,
-                mainData:findAttance
-            }
-            return res.status(data.status).json(data) 
-        }
-    } catch (error) {
-        console.log(error,'get attance id')
-        const data = {
-            isSuccess:false,
-            status:500,
-            message:'Something went Wrong'|| error
-        }
-        return res.status(data.status).json(data)
-    }
-}
-
-export const patchAttanceController = async(req,res)=>{
-    const {id} = req.params;
-    if(!parseInt(id)){
-        const data = {
-            status:404,
-            isSuccess:false,
-            message:"leaveId does not exist."
-        }
-        return res.status(data.status).json(data)
-    }
-    try {
-        const findAttance = await Attance.findById({_id:id})
-        if(!findAttance){
-            const data = {
-                status:404,
-                isSuccess:false,
-                message:"Data Not Found."
-            }
-            return res.status(data.status).json(data)
-        }
-        if(findAttance){
-            const getMinutes = new Date().getMinutes() < 10 ? '0'+ new Date().getMinutes() : new Date().getMinutes()
-            const getHours = new Date().getHours() < 10 ? '0'+ new Date().getHours(): new Date().getHours()
-            const checkOut = `${getHours}:${getMinutes}`
-            const totalTime = new Date() - findAttance.createdAt
-            const hours = Math.floor(totalTime /(1000 *3600) )
-            const remainingSeconds = totalTime %(1000 * 3600);
-            const minutes = Math.floor(remainingSeconds / (1000 *60));
-            const data =hours< 10 ? '0' + hours : hours
-            const minutesData = minutes< 10 ? '0'+ minutes:minutes
-            const total = `${data}:${minutesData}`
-            const updateData = await Attance.findOneAndUpdate({_id:id},{checkOut:checkOut})
-            const updateTime = await Attance.findOneAndUpdate({_id:id},{totalTime:total})
-            if(updateData && updateTime){
-                const findAttanceId = await Attance.findById({_id:id})
-                const postData = findAttanceId.toObject()
-                delete postData.createdAt;
-                delete postData.__v;
-                delete postData.updatedAt
-                const data = {
-                    status:200,
-                    isSuccess:true,
-                    mainData:postData
+        if(findLoan){
+            const updateData = await Loan.findOneAndUpdate({_id:id},{status:status})
+            if(updateData){
+                const findLoanId = await Loan.find({_id:id})
+                if(findLoanId){
+                    const data = {
+                        status:200,
+                        isSuccess:true,
+                        mainData:findLoanId
+                    }
+                    return res.status(data.status).json(data) 
                 }
-                return res.status(data.status).json(data) 
             }
         }
     } catch (error) {
-        console.log(error,'patch attance id')
+        console.log(error,'patch laon id')
         const data = {
             isSuccess:false,
             status:500,
@@ -175,7 +171,7 @@ export const patchAttanceController = async(req,res)=>{
     }
 }
 
-export const deleteAttanceController = async(req,res)=>{
+export const deleteLoanController = async(req,res)=>{
     const {id} = req.params;
     if(!parseInt(id)){
         const data = {
@@ -186,8 +182,8 @@ export const deleteAttanceController = async(req,res)=>{
         return res.status(data.status).json(data)
     }
     try {
-        const findAttance = await Attance.findById({_id:id})
-        if(!findAttance){
+        const findLoan = await Loan.findById({_id:id})
+        if(!findLoan){
             const data = {
                 status:404,
                 isSuccess:false,
@@ -195,8 +191,8 @@ export const deleteAttanceController = async(req,res)=>{
             }
             return res.status(data.status).json(data)
         }
-        if(findAttance){
-            const deleteUser = await Attance.findByIdAndDelete({_id:id})
+        if(findLoan){
+            const deleteUser = await Loan.findByIdAndDelete({_id:id})
            if(deleteUser){
             const data = {
                 status:200,
@@ -207,7 +203,7 @@ export const deleteAttanceController = async(req,res)=>{
            }
         } 
     } catch (error) {
-        console.log(error,'delete attance id')
+        console.log(error,'delete loan id')
         const data = {
             status:500,
             isSuccess:false,

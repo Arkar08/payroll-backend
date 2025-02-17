@@ -8,10 +8,16 @@ const attanceSchema = new mongoose.Schema({
         type:String
     },
     date:{
-        type:String,
+        type:Date,
+        default:new Date()
     },
     totalTime:{
         type:String,
+    },
+    status:{
+        type:String,
+        default:"Present",
+        enum:['Present','Absent','Leave']
     },
     employeeId:{
         type:mongoose.Schema.Types.ObjectId,

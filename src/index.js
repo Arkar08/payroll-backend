@@ -6,6 +6,9 @@ import authRoute from './routes/authRoute.js';
 import deptRoute from './routes/departmentRoute.js';
 import leaveRoute from './routes/leaveRoute.js';
 import attanceRoute from './routes/attanceRoute.js';
+import loanRoute  from './routes/loanRoute.js';
+import generateRoute from './routes/generateRoute.js';
+import payrollRoute from './routes/payrollRoute.js';
 
 
 
@@ -30,6 +33,9 @@ app.use("/api/v1/auth",authRoute)
 app.use("/api/v1/department",deptRoute)
 app.use("/api/v1/leave",leaveRoute)
 app.use("/api/v1/attance",attanceRoute)
+app.use("/api/v1/loan",loanRoute)
+app.use("/api/v1/generate",generateRoute)
+app.use("/api/v1/payroll",payrollRoute)
 
 app.listen(PORT,async()=>{
     await connectToDb()
