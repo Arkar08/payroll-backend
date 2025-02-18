@@ -1,15 +1,15 @@
 import express from 'express';
 import dotenv from 'dotenv'
-import { connectToDb } from './db/connectToDb.js';
-import userRoute from './routes/employeeRoute.js';
-import authRoute from './routes/authRoute.js';
-import deptRoute from './routes/departmentRoute.js';
-import leaveRoute from './routes/leaveRoute.js';
-import attanceRoute from './routes/attanceRoute.js';
-import loanRoute  from './routes/loanRoute.js';
-import generateRoute from './routes/generateRoute.js';
-import payrollRoute from './routes/payrollRoute.js';
-import dropdownRoute from './routes/dropDownRoute.js';
+import { connectToDb } from './src/db/connectToDb.js';
+import userRoute from './src/routes/employeeRoute.js';
+import authRoute from './src/routes/authRoute.js';
+import deptRoute from './src/routes/departmentRoute.js';
+import leaveRoute from './src/routes/leaveRoute.js';
+import attanceRoute from './src/routes/attanceRoute.js';
+import loanRoute  from './src/routes/loanRoute.js';
+import generateRoute from './src/routes/generateRoute.js';
+import payrollRoute from './src/routes/payrollRoute.js';
+import dropdownRoute from './src/routes/dropDownRoute.js';
 
 
 
